@@ -1,0 +1,31 @@
+server:
+  port: 9333
+  servlet:
+    context-path: /api/
+spring:
+  datasource:
+    username: root
+    password: paulro
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem:security-demo
+  h2:
+    console:
+      enabled: true
+      settings:
+        web-allow-others: true
+  jpa:
+    hibernate:
+      ddl-auto: update
+    open-in-view: false
+    properties:
+      hibernate:
+        enable_lazy-load_no_trans: true
+    show-sql: true
+
+  cache:
+    type: REDIS
+  redis:
+    jedis:
+      pool:
+        max-active: 10
+
