@@ -11,8 +11,11 @@ import github.paulro.springsecurityjwt.system.exception.UserNameNotFoundExceptio
 import github.paulro.springsecurityjwt.system.repository.RoleRepository;
 import github.paulro.springsecurityjwt.system.repository.UserRepository;
 import github.paulro.springsecurityjwt.system.repository.UserRoleRepository;
+import github.paulro.springsecurityjwt.system.web.representation.UserRepresentation;
 import github.paulro.springsecurityjwt.system.web.request.UserRegisterRequest;
 import github.paulro.springsecurityjwt.system.web.request.UserUpdateRequest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -67,6 +70,21 @@ public class UserService {
             user.setEnabled(userUpdateRequest.getEnabled());
         }
         userRepository.save(user);
+    }
+
+    public void delete(String userName) {
+        if (!userRepository.existsByUserName(userName)) {
+            throw new UserNameNotFoundException(ImmutableMap.of(USERNAME, userName));
+        }
+    }
+
+    public Page<UserRepresentation> getAll(int pageNum, int pageSize) {
+        return userRepository.findAll(PageRequest.of(pageNum, pageSize))
+                .map(User::toUserRepresentation);
+    }
+
+    public boolean check(String currentPassword, String password) {
+        return this.bCryptPasswordEncoder.matches(currentPassword, password);
     }
 
     private void ensureUserNameNotExist(String userName) {
